@@ -21,13 +21,13 @@
 |----------------|-----------|----------------|
 | ![Login](screenshots/register.jpeg) | ![Home](screenshots/home.jpeg) | ![WebView](screenshots/webview.jpeg) |
 
-| Favorites | Settings | About |
+| Favourites | Settings | About |
 |-----------|----------|-------------|
-| ![Favorites](screenshots/favorites.jpeg) | ![Settings](screenshots/settings.jpeg) | ![About](screenshots/about.jpeg) |
+| ![Favourites](screenshots/favourites.jpeg) | ![Settings](screenshots/settings.jpeg) | ![About](screenshots/about.jpeg) |
 
 | No Internet | Navigation |
 |-------------|------------|
-| ![Nonet](screenshots/nonet.jpeg) | ![Navigation](screenshots/navigation.jepg) | 
+| ![Nonet](screenshots/nonet.jpeg) | ![Navigation](screenshots/navigation.jpeg) | 
 
 ---
 
