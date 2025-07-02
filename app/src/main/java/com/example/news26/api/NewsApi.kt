@@ -15,6 +15,8 @@ suspend fun getHeadlines(
     countryCode: String = "us",
     @Query("page")
     pageNumber : Int = 1,
+    @Query("pageSize")
+    pageSize : Int = 100,
     @Query("apiKey")
     apiKey: String  = Constant.API_KEY
 ) : Response<NewsData>

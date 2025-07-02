@@ -109,6 +109,7 @@ class MainActivity : AppCompatActivity() , NavigationView.OnNavigationItemSelect
 //        database instantiated
        val database = ArticleDatabase(this)
        val newsRepository = NewsRepository(database)
+
        val viewModelProviderFactory = ViewModelProviderFactory(application,newsRepository)
        viewModel = ViewModelProvider(this,viewModelProviderFactory)[NewsViewModel::class.java]
 

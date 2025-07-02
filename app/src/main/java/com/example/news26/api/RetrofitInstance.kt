@@ -7,6 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitInstance {
+
     companion object{
 
         private val retrofit  by lazy {
@@ -17,6 +18,7 @@ class RetrofitInstance {
                 .addInterceptor(logging)
                 .build()
 
+            // adding custom client with logging Interceptor
             Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

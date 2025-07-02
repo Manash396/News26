@@ -26,6 +26,8 @@ class Home : Fragment() {
     private val binding  get() = _binding!!
 
 
+    private var isScrolling  = false
+
     private val viewModel: NewsViewModel by activityViewModels()
 
     private lateinit var noInternetView : TextView
@@ -43,6 +45,7 @@ class Home : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+//        if (savedInstanceState != null) return
         adpater = AdapterR1()
 
         setUpRecycleView()
@@ -55,9 +58,9 @@ class Home : Fragment() {
         NetworkLiveData(requireActivity().application).observe(viewLifecycleOwner) {
             result ->
             if (result){
-                noInternetView.visibility = View.GONE
-                progressBarView.visibility = View.GONE
-                viewModel.getHeadLines("us")
+                   binding.noInternet.visibility = View.GONE
+                if(viewModel.headLineResponse == null)
+                    viewModel.getHeadLines("us")
             }else{
                 binding.noInternet.visibility = View.VISIBLE
             }
@@ -69,8 +72,9 @@ class Home : Fragment() {
                    noInternetView.visibility = View.GONE
                    progressBarView.visibility = View.GONE
                     result.data?.let {
-                        val articles = it.articles
-                       adpater.differ.submitList(articles)
+                        val articles = viewModel.headLineResponse?.articles
+//                        val articles = it.articles
+                        adpater.differ.submitList(articles)
                         // setting the listener
                         adpater.setOnItemClickedListener { article ->
                             val bundle = Bundle().apply {
@@ -89,9 +93,9 @@ class Home : Fragment() {
                 }
 
                 is Resource.Error ->{
-                    noInternetView.text = result.message
                     noInternetView.visibility = View.VISIBLE
                     progressBarView.visibility = View.GONE
+                    noInternetView.text = result.message
                 }
                 is Resource.Loading -> {
                     progressBarView.visibility = View.VISIBLE
@@ -102,8 +106,36 @@ class Home : Fragment() {
     }
 
     fun setUpRecycleView(){
-        binding.homeRecycleView.layoutManager = LinearLayoutManager(requireContext())  // gives the context of the host
+        val layoutManager = LinearLayoutManager(requireContext())
+        binding.homeRecycleView.layoutManager = layoutManager  // gives the context of the host
         binding.homeRecycleView.adapter = adpater
+   // setting scroll view listener
+
+        binding.homeRecycleView.addOnScrollListener(object  : RecyclerView.OnScrollListener(){
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                val visibleItemCount  = layoutManager.childCount
+                val totalItem = layoutManager.itemCount
+
+                val shouldPaginate = isScrolling && (firstVisibleItemPosition+visibleItemCount >= totalItem) && firstVisibleItemPosition>=0
+
+                if (shouldPaginate){
+                    isScrolling = false
+                    viewModel.getHeadLines("us")
+                }
+            }
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING){
+                    isScrolling = true
+                }
+            }
+        })
+
+
     }
 
     override fun onDestroy() {

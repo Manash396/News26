@@ -11,12 +11,14 @@ import com.example.news26.data.NewsData
 import com.example.news26.db.RoomArticle
 import com.example.news26.repository.NewsRepository
 import com.example.news26.util.Resource
+import org.json.JSONObject
 import kotlinx.coroutines.launch
 import okio.IOException
 
 import retrofit2.Response
 
 class NewsViewModel(app: Application, private val newsRepository: NewsRepository) : AndroidViewModel(app) {
+//  for pagination on scrolling to the last page
 
     val headLines: MutableLiveData<Resource<NewsData>> = MutableLiveData()
     var headLinePage = 1
@@ -24,21 +26,24 @@ class NewsViewModel(app: Application, private val newsRepository: NewsRepository
 // evaluating the response
     private fun headLinesResponse(response : Response<NewsData>) : Resource<NewsData>{
         if (response.isSuccessful){
+              headLinePage++
             response.body()?.let { resultResponse ->
-                headLinePage++
                 if (headLineResponse == null){
                     headLineResponse = resultResponse
                 }else{
                     val oldArticles = headLineResponse?.articles?.toMutableList()
-                    val newArticles = resultResponse.articles
+                     val newArticles = resultResponse.articles
                     oldArticles?.addAll(newArticles)
-                    headLineResponse = headLineResponse?.copy(articles = oldArticles?.toList()!!)
+
+                    headLineResponse = headLineResponse?.copy(articles = oldArticles!!.toList())
                 }
                  return Resource.Success(headLineResponse ?: resultResponse)
             }
         }
+//           i have to create maually json object for error
+        val errorObj = JSONObject(response.errorBody()!!.charStream().readText())
 
-        return Resource.Error(response.message())
+        return Resource.Error(message = errorObj.getString("message"))
     }
 
 
